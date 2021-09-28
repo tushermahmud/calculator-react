@@ -1,7 +1,6 @@
 
-import {useState} from "react";
+import {useState,useEffect} from "react";
 import CreateDigit from "./components/CreateDigits";
-import Operators from "./components/Operators";
 import Display from "./components/Display";
 //initializing the calculation and result
 //making structure of the ui
@@ -15,11 +14,16 @@ import Display from "./components/Display";
 function App() {
   const [calc,setCalc] = useState("");
   const [result,setResult] =useState(""); 
-  const ops = ['/','*','+','-','.'];
-
+  const ops = ['/','*','+','-'];
+  useEffect(()=>{
+    if(calc!==""){
+      deleteLatest();
+      calculate();
+    }
+  },[setCalc])
 
   const updateCalc = value=>{
-    if(ops.includes(value)&&calc===""||ops.includes(value)&&ops.includes(calc.slice(-1))){
+    if((ops.includes(value)&&calc==="")||(ops.includes(value)&&ops.includes(calc.slice(-1)))){
       return;
     }
     setCalc(calc+value);
@@ -53,15 +57,9 @@ function App() {
   return (
     <div className="App">
       <div className="calculator">
-        <Display result={result} calc={calc}/> 
-        <Operators updateCalc={updateCalc} deleteLatest={deleteLatest}/>
-        <div className="digits">
-          <CreateDigit updateCalc={updateCalc}/>
-          <button onClick={()=>updateCalc('0')}>0</button>
-          <button>.</button>
-          <button onClick={calculate}>=</button>
-        </div>
-        <button className="clearButton" onClick={clearCalc}>Clear</button>
+          <Display result={result} calc={calc}/>       
+          <CreateDigit updateCalc={updateCalc} operators={ops} calculate={calculate} deleteLatest={deleteLatest}/>
+          <button className="clearButton" onClick={clearCalc}>Clear</button>
       </div>
     </div>
   );
